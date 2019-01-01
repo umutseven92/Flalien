@@ -4,6 +4,7 @@ import 'package:flalien/reddit/post.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class PostPage extends StatefulWidget {
   final Post _post;
@@ -44,7 +45,7 @@ class PostPageState extends State<PostPage> {
                       comment.author.name,
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
-                    Text(comment.body)
+                    MarkdownBody(data: comment.body)
                   ],
                 )),
           )));
@@ -69,32 +70,35 @@ class PostPageState extends State<PostPage> {
     var formatter = new DateFormat('MMMd y').add_jms();
     String formattedDate = formatter.format(_post.createdDateTime);
 
+    Container post = Container(
+      margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(_post.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24,
+              )),
+          Container(
+              margin: EdgeInsets.only(top: 10),
+              child: Text(
+                '${_post.author.name}, at $formattedDate',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              )),
+          Container(
+              margin: EdgeInsets.only(top: 20),
+              child: MarkdownBody(data: _post.body))
+        ],
+      ),
+    );
+
     var body;
 
     if (_comments == null) {
       body = ListView(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(_post.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Text(
-                      '${_post.author.name}, at $formattedDate',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 20), child: Text(_post.body))
-              ],
-            ),
-          ),
+          post,
           Container(
               margin: EdgeInsets.only(top: 15, left: 15, right: 15),
               child: Center(
@@ -105,27 +109,7 @@ class PostPageState extends State<PostPage> {
     } else {
       body = ListView(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(_post.title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: Text(
-                      '${_post.author.name}, at $formattedDate',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    )),
-                Container(
-                    margin: EdgeInsets.only(top: 20), child: Text(_post.body))
-              ],
-            ),
-          ),
+          post,
           Container(
             margin: EdgeInsets.only(top: 15, left: 15, right: 15),
             child: Column(
