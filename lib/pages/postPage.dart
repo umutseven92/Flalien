@@ -1,6 +1,7 @@
 import 'package:flalien/reddit/comment.dart';
 import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/post.dart';
+import 'package:flalien/reddit/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -28,11 +29,14 @@ class PostPageState extends State<PostPage> {
   List<Widget> _createComments() {
     List<Widget> widgets = <Widget>[];
 
-    widgets.add(Text('Comments',
-        style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)));
+    widgets.add(Container(
+        margin: EdgeInsets.only(top: 10, left: 15, right: 15),
+        child: Text('Comments:',
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
     _comments.take(50).forEach((comment) {
       widgets.add(Container(
+          margin: EdgeInsets.only(left: 10, right: 10),
           width: 600,
           child: Card(
             child: Container(
@@ -70,35 +74,38 @@ class PostPageState extends State<PostPage> {
     var formatter = new DateFormat('MMMd y').add_jms();
     String formattedDate = formatter.format(_post.createdDateTime);
 
-    Container post = Container(
+    List<Widget> postInfo = <Widget>[
+      Text(_post.title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24,
+          )),
+      Container(
+          margin: EdgeInsets.only(top: 10),
+          child: Text(
+            '${_post.author.name}, at $formattedDate',
+            style: TextStyle(fontWeight: FontWeight.w500),
+          )),
+    ];
+
+    if (_post.postType == PostType.Text) {
+      postInfo.add(Container(
+          margin: EdgeInsets.only(top: 20),
+          child: MarkdownBody(data: _post.body)));
+    }
+
+    Container postSection = Container(
       margin: EdgeInsets.only(top: 15, left: 15, right: 15),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(_post.title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              )),
-          Container(
-              margin: EdgeInsets.only(top: 10),
-              child: Text(
-                '${_post.author.name}, at $formattedDate',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              )),
-          Container(
-              margin: EdgeInsets.only(top: 20),
-              child: MarkdownBody(data: _post.body))
-        ],
-      ),
+          crossAxisAlignment: CrossAxisAlignment.start, children: postInfo),
     );
 
-    var body;
+    var fullSection;
 
     if (_comments == null) {
-      body = ListView(
+      fullSection = ListView(
         children: <Widget>[
-          post,
+          postSection,
           Container(
               margin: EdgeInsets.only(top: 15, left: 15, right: 15),
               child: Center(
@@ -107,11 +114,10 @@ class PostPageState extends State<PostPage> {
         ],
       );
     } else {
-      body = ListView(
+      fullSection = ListView(
         children: <Widget>[
-          post,
+          postSection,
           Container(
-            margin: EdgeInsets.only(top: 15, left: 15, right: 15),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: _createComments()),
@@ -124,6 +130,6 @@ class PostPageState extends State<PostPage> {
         appBar: AppBar(
           title: Text(_post.subreddit),
         ),
-        body: body);
+        body: fullSection);
   }
 }

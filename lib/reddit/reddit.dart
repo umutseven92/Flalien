@@ -2,12 +2,69 @@ import 'package:flalien/reddit/author.dart';
 import 'package:flalien/reddit/comment.dart';
 import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/postSort.dart';
+import 'package:flalien/reddit/postType.dart';
 import 'package:http/http.dart' as http;
 import 'package:flalien/reddit/post.dart';
 import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class Reddit {
+  bool isAuthorized() {
+    return false;
+  }
+
+  List<String> getDefaultSubreddits() {
+    return [
+      'announcements',
+      'art',
+      'askreddit',
+      'askscience',
+      'aww',
+      'blog',
+      'books',
+      'creepy',
+      'dataisbeautiful',
+      'DIY',
+      'Documentaries',
+      'EarthPorn',
+      'explainlikeimfive',
+      'food',
+      'funny',
+      'futurology',
+      'gadgets',
+      'gaming',
+      'getmotivated',
+      'gifs',
+      'history',
+      'IAma',
+      'internetisbeautiful',
+      'jokes',
+      'lifeprotips',
+      'listentothis',
+      'mildlyinteresting',
+      'movies',
+      'music',
+      'news',
+      'nosleep',
+      'nottheonion',
+      'oldschoolcool',
+      'personalfinance',
+      'philosophy',
+      'photoshopbattles',
+      'pics',
+      'science',
+      'showerthoughts',
+      'space',
+      'sports',
+      'television',
+      'tifu',
+      'todayilearned',
+      'upliftingnews',
+      'videos',
+      'worldnews'
+    ];
+  }
+
   Future<List<Post>> getPosts(
       String subreddit, PostSort sort, int postCount) async {
     String stringSort = _getStringValueOfSort(sort);
@@ -32,7 +89,17 @@ class Reddit {
 
       double createdUtc = post['created_utc'];
 
-      posts.add(Post(id, subreddit, title, body, author, createdUtc));
+      PostType postType;
+
+      if (post['is_self']) {
+        postType = PostType.Text;
+      } else if (post['post_hint'] == 'link') {
+        postType = PostType.Link;
+      } else {
+        postType = PostType.Media;
+      }
+
+      posts.add(Post(id, subreddit, title, body, author, createdUtc, postType));
     }
 
     return posts;
@@ -71,6 +138,12 @@ class Reddit {
     return response.body;
   }
 
+  String _getStringValueOfSort<T>(T sort) {
+    String stringSort = sort.toString().split('.').last.toLowerCase();
+
+    return stringSort;
+  }
+
   @Deprecated('Not tested yet, do not use')
   Future<String> _authorizeReddit() async {
     final deviceId = Uuid().v4();
@@ -88,11 +161,5 @@ class Reddit {
 
     assert(response.statusCode == 200);
     return response.body;
-  }
-
-  String _getStringValueOfSort<T>(T sort) {
-    String stringSort = sort.toString().split('.').last.toLowerCase();
-
-    return stringSort;
   }
 }
