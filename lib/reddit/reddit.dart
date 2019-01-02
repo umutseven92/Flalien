@@ -1,4 +1,5 @@
 import 'package:flalien/reddit/author.dart';
+import 'package:flalien/reddit/basePost.dart';
 import 'package:flalien/reddit/comment.dart';
 import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/postSort.dart';
@@ -16,8 +17,8 @@ class Reddit {
   List<String> getDefaultSubreddits() {
     return [
       'announcements',
-      'art',
-      'askreddit',
+      'Art',
+      'AskReddit',
       'askscience',
       'aww',
       'blog',
@@ -30,36 +31,36 @@ class Reddit {
       'explainlikeimfive',
       'food',
       'funny',
-      'futurology',
+      'Futurology',
       'gadgets',
       'gaming',
-      'getmotivated',
+      'GetMotivated',
       'gifs',
       'history',
-      'IAma',
-      'internetisbeautiful',
-      'jokes',
-      'lifeprotips',
+      'IAmA',
+      'InternetIsBeautiful',
+      'Jokes',
+      'LifeProTips',
       'listentothis',
       'mildlyinteresting',
       'movies',
-      'music',
+      'Music',
       'news',
       'nosleep',
       'nottheonion',
-      'oldschoolcool',
+      'OldSchoolCool',
       'personalfinance',
       'philosophy',
       'photoshopbattles',
       'pics',
       'science',
-      'showerthoughts',
+      'Showerthoughts',
       'space',
       'sports',
       'television',
       'tifu',
       'todayilearned',
-      'upliftingnews',
+      'UpliftingNews',
       'videos',
       'worldnews'
     ];
@@ -71,10 +72,10 @@ class Reddit {
 
     List<Post> posts = List<Post>();
 
-    String url =
+    String getUrl =
         'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$postCount';
 
-    String response = await _httpGet(url);
+    String response = await _httpGet(getUrl);
 
     var jsonPosts = jsonDecode(response);
 
@@ -82,11 +83,9 @@ class Reddit {
       final post = jsonPost['data'];
 
       String id = post['id'];
-      String subreddit = post['subreddit'];
+      String subreddit = post['subreddit_name_prefixed'];
       String title = post['title'];
-      String body = post['selftext'];
       Author author = Author(post['author']);
-
       double createdUtc = post['created_utc'];
 
       PostType postType;
@@ -99,7 +98,23 @@ class Reddit {
         postType = PostType.Media;
       }
 
-      posts.add(Post(id, subreddit, title, body, author, createdUtc, postType));
+      BasePost basePost =
+          BasePost(id, subreddit, title, author, createdUtc, postType);
+
+      Post postToAdd;
+
+      if (postType == PostType.Media || postType == PostType.Link) {
+        String thumbnail = post['thumbnail'];
+        String url = post['url'];
+
+        postToAdd = Post(basePost, null, url, thumbnail);
+      } else {
+        String body = post['selftext'];
+
+        postToAdd = Post(basePost, body, null, null);
+      }
+
+      posts.add(postToAdd);
     }
 
     return posts;
@@ -111,7 +126,7 @@ class Reddit {
     List<Comment> comments = List<Comment>();
 
     String url =
-        'https://www.reddit.com/r/${post.subreddit}/comments/${post.id}.json?sort=$stringSort';
+        'https://www.reddit.com/${post.basePost.subreddit}/comments/${post.basePost.id}.json?sort=$stringSort';
 
     String response = await _httpGet(url);
 

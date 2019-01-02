@@ -1,14 +1,12 @@
 import 'package:flalien/reddit/author.dart';
+import 'package:flalien/reddit/basePost.dart';
 import 'package:flalien/reddit/postType.dart';
 
 class Post {
-  String id;
-  String subreddit;
-  String title;
+  BasePost basePost;
   String body;
-  Author author;
-  double createdUtc;
-  PostType postType;
+  String url;
+  String thumbnail;
 
   String get bodyPreview {
     if (body.length > 50) {
@@ -19,11 +17,10 @@ class Post {
 
   DateTime get createdDateTime {
     final DateTime date = new DateTime.fromMillisecondsSinceEpoch(
-        createdUtc.toInt() * 1000,
+        basePost.createdUtc.toInt() * 1000,
         isUtc: true);
     return date;
   }
 
-  Post(this.id, this.subreddit, this.title, this.body, this.author,
-      this.createdUtc, this.postType);
+  Post(this.basePost, this.body, this.url, this.thumbnail);
 }

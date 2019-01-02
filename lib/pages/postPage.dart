@@ -75,7 +75,7 @@ class PostPageState extends State<PostPage> {
     String formattedDate = formatter.format(_post.createdDateTime);
 
     List<Widget> postInfo = <Widget>[
-      Text(_post.title,
+      Text(_post.basePost.title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24,
@@ -83,12 +83,12 @@ class PostPageState extends State<PostPage> {
       Container(
           margin: EdgeInsets.only(top: 10),
           child: Text(
-            '${_post.author.name}, at $formattedDate',
+            '${_post.basePost.author.name}, at $formattedDate',
             style: TextStyle(fontWeight: FontWeight.w500),
           )),
     ];
 
-    if (_post.postType == PostType.Text) {
+    if (_post.basePost.postType == PostType.Text) {
       postInfo.add(Container(
           margin: EdgeInsets.only(top: 20),
           child: MarkdownBody(data: _post.body)));
@@ -128,7 +128,7 @@ class PostPageState extends State<PostPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(_post.subreddit),
+          title: Text(_post.basePost.subreddit),
         ),
         body: fullSection);
   }
