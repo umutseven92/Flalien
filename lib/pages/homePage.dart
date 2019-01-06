@@ -41,12 +41,16 @@ class HomePageState extends State<HomePage> {
     return ListTile(
       title: Text(subredditName),
       onTap: () {
+        _activeSubreddit = subredditName;
+
+        setState(() {
+          _posts = null;
+        });
         _reddit
             .getPosts(subredditName, PostSort.Hot, defaultPostCount)
             .then((result) {
           setState(() {
             _posts = result;
-            _activeSubreddit = subredditName;
           });
         });
 
@@ -112,7 +116,7 @@ class HomePageState extends State<HomePage> {
     if (_posts == null) {
       body = Container(
         child: Center(
-          child: Text('Loading..'),
+          child: CircularProgressIndicator()
         ),
       );
     } else {
