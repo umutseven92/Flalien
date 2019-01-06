@@ -1,5 +1,6 @@
 import 'package:flalien/reddit/post.dart';
 import 'package:flalien/reddit/reddit.dart';
+import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flalien/widgets/subredditWidget.dart';
 import 'package:flalien/reddit/postSort.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +117,7 @@ class HomePageState extends State<HomePage> {
     if (_posts == null) {
       body = Container(
         child: Center(
-          child: CircularProgressIndicator()
+          child: LoadingWidget()
         ),
       );
     } else {

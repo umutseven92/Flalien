@@ -3,6 +3,7 @@ import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/post.dart';
 import 'package:flalien/reddit/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
+import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -31,7 +32,7 @@ class PostPageState extends State<PostPage> {
 
     widgets.add(Container(
         margin: EdgeInsets.only(top: 10, left: 15, right: 15),
-        child: Text('Comments:',
+        child: Text('${_comments.length} Comments:',
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
     _comments.take(50).forEach((comment) {
@@ -61,9 +62,11 @@ class PostPageState extends State<PostPage> {
   @override
   void initState() {
     _reddit.getComments(_post, CommentSort.Best).then((result) {
-      setState(() {
-        this._comments = result;
-      });
+      if(mounted) {
+        setState(() {
+          this._comments = result;
+        });
+      }
     });
 
     super.initState();
@@ -71,7 +74,7 @@ class PostPageState extends State<PostPage> {
 
   @override
   Widget build(BuildContext context) {
-    var formatter = new DateFormat('MMMd y').add_jms();
+    var formatter = new DateFormat('MMM d y').add_jms();
     String formattedDate = formatter.format(_post.createdDateTime);
 
     List<Widget> postInfo = <Widget>[
@@ -109,7 +112,7 @@ class PostPageState extends State<PostPage> {
           Container(
               margin: EdgeInsets.only(top: 15, left: 15, right: 15),
               child: Center(
-                child: CircularProgressIndicator()
+                child: LoadingWidget()
               ))
         ],
       );
