@@ -4,6 +4,7 @@ import 'package:flalien/reddit/comment.dart';
 import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/postSort.dart';
 import 'package:flalien/reddit/postType.dart';
+import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:http/http.dart' as http;
 import 'package:flalien/reddit/post.dart';
 import 'dart:convert';
@@ -68,7 +69,7 @@ class Reddit {
 
   Future<List<Post>> getPosts(
       String subreddit, PostSort sort, int postCount) async {
-    String stringSort = _getStringValueOfSort(sort);
+    String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Post> posts = List<Post>();
 
@@ -121,7 +122,7 @@ class Reddit {
   }
 
   Future<List<Comment>> getComments(Post post, CommentSort sort) async {
-    String stringSort = _getStringValueOfSort(sort);
+    String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Comment> comments = List<Comment>();
 
@@ -151,12 +152,6 @@ class Reddit {
 
     assert(response.statusCode == 200);
     return response.body;
-  }
-
-  String _getStringValueOfSort<T>(T sort) {
-    String stringSort = sort.toString().split('.').last.toLowerCase();
-
-    return stringSort;
   }
 
   @Deprecated('Not tested yet, do not use')

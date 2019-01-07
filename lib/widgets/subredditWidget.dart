@@ -47,8 +47,7 @@ class SubredditWidget extends StatelessWidget {
 
     List<Widget> postRow = <Widget>[];
 
-    if (post.basePost.postType == PostType.Media)
-    {
+    if (post.basePost.postType == PostType.Media) {
       // Add image or video thumbnail
       if (post.thumbnail == 'nsfw') {
         Container thumbnail = _createMediaThumbnail(
@@ -68,7 +67,7 @@ class SubredditWidget extends StatelessWidget {
             post.url);
         postRow.add(thumbnail);
       }
-    } else if(post.basePost.postType == PostType.Link) {
+    } else if (post.basePost.postType == PostType.Link) {
       if (post.thumbnail == 'nsfw') {
         Container thumbnail = _createLinkThumbnail(
             Icon(FontAwesomeIcons.kissWinkHeart, color: Colors.pink), post.url);
@@ -165,10 +164,7 @@ class SubredditWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     _context = context;
 
-    return Column(
-      children: <Widget>[
-        Expanded(child: ListView(children: _createPostList()))
-      ],
-    );
+    return ListView(children: _createPostList());
+
   }
 }

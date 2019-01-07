@@ -7,15 +7,16 @@ class FlalienApp extends StatelessWidget {
     return MaterialApp(
         title: 'Flalien',
         theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Color.fromARGB(255, 0, 121, 211),
-          fontFamily: 'Montserrat',
-          iconTheme: IconThemeData(
-            color: Color.fromARGB(255, 0, 121, 211),
-
-          )
+            brightness: Brightness.light,
+            primaryColor: Color.fromARGB(255, 0, 121, 211),
+            fontFamily: 'Montserrat',
+            iconTheme: IconThemeData(
+              color: Color.fromARGB(255, 0, 121, 211),
+            ),
+            buttonTheme: ButtonThemeData(
+                buttonColor: Color.fromARGB(255, 0, 121, 211),
+            )
         ),
-        home: HomePage()
-    );
+        home: HomePage());
   }
 }

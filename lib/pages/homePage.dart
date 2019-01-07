@@ -1,9 +1,11 @@
 import 'package:flalien/reddit/post.dart';
 import 'package:flalien/reddit/reddit.dart';
+import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flalien/widgets/subredditWidget.dart';
 import 'package:flalien/reddit/postSort.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -18,17 +20,19 @@ class HomePageState extends State<HomePage> {
 
   String _activeSubreddit;
   List<Post> _posts;
+  PostSort _currentSort;
   Reddit _reddit;
 
   HomePageState() {
     _reddit = Reddit();
+    _currentSort = PostSort.Hot;
   }
 
   @override
   void initState() {
     _activeSubreddit = defaultSubreddit;
     _reddit
-        .getPosts(_activeSubreddit, PostSort.Hot, defaultPostCount)
+        .getPosts(_activeSubreddit, _currentSort, defaultPostCount)
         .then((result) {
       setState(() {
         _posts = result;
@@ -43,12 +47,13 @@ class HomePageState extends State<HomePage> {
       title: Text(subredditName),
       onTap: () {
         _activeSubreddit = subredditName;
+        _currentSort = PostSort.Hot;
 
         setState(() {
           _posts = null;
         });
         _reddit
-            .getPosts(subredditName, PostSort.Hot, defaultPostCount)
+            .getPosts(subredditName, _currentSort, defaultPostCount)
             .then((result) {
           setState(() {
             _posts = result;
@@ -110,18 +115,84 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+  void _setCurrentSort(PostSort sort) {
+    _currentSort = sort;
+
+    setState(() {
+      _posts = null;
+    });
+    _reddit
+        .getPosts(_activeSubreddit, _currentSort, defaultPostCount)
+        .then((result) {
+      setState(() {
+        _posts = result;
+      });
+    });
+
+    Navigator.pop(context);
+  }
+
+  void _changeSort(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(FontAwesomeIcons.fire),
+                title: Text('Hot'),
+                onTap: () => _setCurrentSort(PostSort.Hot),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.medal),
+                title: Text('Best'),
+                onTap: () => _setCurrentSort(PostSort.Best),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.newspaper),
+                title: Text('New'),
+                onTap: () => _setCurrentSort(PostSort.New),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.star),
+                title: Text('Top'),
+                onTap: () => _setCurrentSort(PostSort.Top),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.angry),
+                title: Text('Controversial'),
+                onTap: () => _setCurrentSort(PostSort.Controversial),
+              ),
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var body;
 
     if (_posts == null) {
       body = Container(
-        child: Center(
-          child: LoadingWidget()
-        ),
+        child: Center(child: LoadingWidget()),
       );
     } else {
-      body = SubredditWidget(_posts, _reddit);
+      body = Column(
+        children: <Widget>[
+          Container(
+            child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text(
+                  'Sort: ${SortHelper.getStringValueOfSort(_currentSort)}',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () => _changeSort(context)),
+          ),
+          Expanded(child: SubredditWidget(_posts, _reddit))
+        ],
+      );
     }
 
     return Scaffold(
