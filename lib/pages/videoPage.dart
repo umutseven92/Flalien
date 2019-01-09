@@ -16,7 +16,9 @@ class VideoPageState extends State<VideoPage> {
   VideoPlayerController _controller;
   bool _isPlaying = false;
 
-  VideoPageState(this.url);
+  VideoPageState(String url){
+   this.url = "$url/HLSPlaylist.m3u8";
+  }
 
   @override
   void initState() {
@@ -46,7 +48,7 @@ class VideoPageState extends State<VideoPage> {
                 aspectRatio: _controller.value.aspectRatio,
                 child: VideoPlayer(_controller),
               )
-            : Container(),
+            : LoadingWidget(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed:
