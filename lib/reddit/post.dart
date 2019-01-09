@@ -1,6 +1,4 @@
-import 'package:flalien/reddit/author.dart';
 import 'package:flalien/reddit/basePost.dart';
-import 'package:flalien/reddit/postType.dart';
 
 class Post {
   BasePost basePost;

@@ -1,5 +1,6 @@
-import 'package:flalien/pages/mediaPage.dart';
+import 'package:flalien/pages/imagePage.dart';
 import 'package:flalien/pages/postPage.dart';
+import 'package:flalien/pages/videoPage.dart';
 import 'package:flalien/reddit/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flutter/material.dart';
@@ -15,68 +16,43 @@ class SubredditWidget extends StatelessWidget {
   SubredditWidget(this._posts, this._reddit);
 
   Widget _createPostWidget(Post post) {
-    Column arrowColumn = Column(
-      children: <Widget>[
-        SizedBox(
-          height: 40,
-          width: 40,
-          child: IconButton(
-              icon: Icon(
-                Icons.arrow_upward,
-                color: Colors.grey,
-              ),
-              onPressed: () => null),
-        ),
-        SizedBox(
-          height: 40,
-          width: 40,
-          child: IconButton(
-              icon: Icon(Icons.arrow_downward, color: Colors.grey),
-              onPressed: () => null),
-        )
-      ],
-    );
-
-    Expanded postTitle = Expanded(
-        child: Container(
-            margin: EdgeInsets.only(left: 10, right: 10),
-            child: Text(
-              post.basePost.title,
-              style: TextStyle(fontWeight: FontWeight.w600),
-            )));
-
     List<Widget> postRow = <Widget>[];
 
-    if (post.basePost.postType == PostType.Media) {
-      // Add image or video thumbnail
-      if (post.thumbnail == 'nsfw') {
-        Container thumbnail = _createMediaThumbnail(
-            Icon(FontAwesomeIcons.kissWinkHeart, color: Colors.pink), post.url);
-        postRow.add(thumbnail);
-      } else if (post.thumbnail == 'default') {
-        Container thumbnail = _createMediaThumbnail(Icon(Icons.link), post.url);
-        postRow.add(thumbnail);
-      } else {
-        Container thumbnail = _createMediaThumbnail(
-            ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: Image.network(
-                  post.thumbnail,
-                  fit: BoxFit.cover,
-                )),
-            post.url);
-        postRow.add(thumbnail);
-      }
+    Function thumbnailCreate;
+
+    if (post.basePost.postType == PostType.Image) {
+      thumbnailCreate = _createImageThumbnail;
+    } else if (post.basePost.postType == PostType.Video) {
+      thumbnailCreate = _createVideoThumbnail;
     } else if (post.basePost.postType == PostType.Link) {
+      thumbnailCreate = _createLinkThumbnail;
+    }
+
+    if (post.basePost.postType != PostType.Text) {
+      Container thumbnail;
+
       if (post.thumbnail == 'nsfw') {
-        Container thumbnail = _createLinkThumbnail(
-            Icon(FontAwesomeIcons.kissWinkHeart, color: Colors.pink), post.url);
-        postRow.add(thumbnail);
-      } else if (post.thumbnail == 'default') {
-        Container thumbnail = _createLinkThumbnail(Icon(Icons.link), post.url);
-        postRow.add(thumbnail);
+        thumbnail = thumbnailCreate(
+            Text(
+              'NSFW',
+              style: TextStyle(
+                  color: Colors.pink,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20),
+            ),
+            post.url);
+      } else if (post.thumbnail == 'spoiler') {
+        thumbnail = thumbnailCreate(
+            Text(
+              'SPOILER',
+              style: TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            post.url);
+      } else if (post.thumbnail == 'default' || post.thumbnail == 'image') {
+        thumbnail = thumbnailCreate(Icon(Icons.link), post.url);
       } else {
-        Container thumbnail = _createLinkThumbnail(
+        thumbnail = thumbnailCreate(
             ClipRRect(
                 borderRadius: BorderRadius.circular(3),
                 child: Image.network(
@@ -84,20 +60,85 @@ class SubredditWidget extends StatelessWidget {
                   fit: BoxFit.cover,
                 )),
             post.url);
-        postRow.add(thumbnail);
       }
+
+      postRow.add(thumbnail);
     }
+
+    Widget postTitle = Expanded(
+        child: Container(
+            margin: EdgeInsets.only(left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  post.basePost.title,
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                Container(
+                    margin: EdgeInsets.all(3),
+                    child: Row(
+                      children: _getPostIcons(post),
+                    ))
+              ],
+            )));
 
     postRow.add(postTitle);
 
     return Container(
-        height: 80,
         child: RaisedButton(
-          padding: EdgeInsets.only(left: 0),
-          color: Colors.white,
-          onPressed: () => _navigateToPost(post),
-          child: Row(children: postRow),
-        ));
+      elevation: 0,
+      padding: EdgeInsets.only(left: 0, top: 5),
+      color: Colors.white,
+      onPressed: () => _navigateToPost(post),
+      child: Row(children: postRow),
+    ));
+  }
+
+  List<Widget> _getPostIcons(Post post) {
+    List<Widget> icons = [
+      _getPostTypeIcon(post.basePost.postType),
+    ];
+
+    if (post.basePost.isGilded) {
+      icons.add(_getPostGoldIcon());
+    }
+
+    return icons;
+  }
+
+  Container _getPostGoldIcon() {
+    return Container(
+        margin: EdgeInsets.only(left: 5),
+        child: Icon(FontAwesomeIcons.medal, size: 18, color: Colors.amber));
+  }
+
+  Icon _getPostTypeIcon(PostType postType) {
+    Icon icon;
+    final double size = 18;
+    final Color color = Colors.grey;
+
+    switch (postType) {
+      case PostType.Text:
+        icon = Icon(
+          FontAwesomeIcons.comment,
+          size: size,
+          color: color,
+        );
+        break;
+      case PostType.Link:
+        icon = Icon(FontAwesomeIcons.link, size: size, color: color);
+        break;
+      case PostType.Image:
+        icon = Icon(FontAwesomeIcons.image, size: size, color: color);
+        break;
+      case PostType.Video:
+        icon = Icon(FontAwesomeIcons.video, size: size, color: color);
+        break;
+    }
+
+    return icon;
   }
 
   void _navigateToPost(Post post) {
@@ -112,42 +153,51 @@ class SubredditWidget extends StatelessWidget {
 
     _posts.take(50).forEach((post) {
       postWidgetList.add(_createPostWidget(post));
+      postWidgetList.add(Divider());
     });
 
     return postWidgetList;
   }
 
   Container _createLinkThumbnail(Widget childWidget, String url) {
-    return Container(
-      margin: EdgeInsets.only(left: 10),
-      height: 60,
-      width: 60,
-      child: RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-        padding: EdgeInsets.all(0),
-        onPressed: () {
-          this._launchURL(url);
-        },
-        color: Colors.white,
-        child: childWidget,
-      ),
-    );
+    var onPressed = () {
+      this._launchURL(url);
+    };
+
+    return _createBaseThumbnail(childWidget, onPressed);
   }
 
-  Container _createMediaThumbnail(Widget childWidget, String url) {
+  Container _createImageThumbnail(Widget childWidget, String url) {
+    var onPressed = () {
+      Navigator.of(_context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return ImagePage(url);
+      }));
+    };
+
+    return _createBaseThumbnail(childWidget, onPressed);
+  }
+
+  Container _createVideoThumbnail(Widget childWidget, String url) {
+    var onPressed = () {
+      Navigator.of(_context)
+          .push(MaterialPageRoute(builder: (BuildContext context) {
+        return VideoPage(url);
+      }));
+    };
+
+    return _createBaseThumbnail(childWidget, onPressed);
+  }
+
+  Container _createBaseThumbnail(Widget childWidget, Function onPressed) {
     return Container(
       margin: EdgeInsets.only(left: 10),
-      height: 60,
-      width: 60,
+      height: 70,
+      width: 70,
       child: RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
         padding: EdgeInsets.all(0),
-        onPressed: () {
-          Navigator.of(_context)
-              .push(MaterialPageRoute(builder: (BuildContext context) {
-            return MediaPage(url);
-          }));
-        },
+        onPressed: onPressed,
         color: Colors.white,
         child: childWidget,
       ),
@@ -165,6 +215,5 @@ class SubredditWidget extends StatelessWidget {
     _context = context;
 
     return ListView(children: _createPostList());
-
   }
 }

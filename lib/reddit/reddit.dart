@@ -5,6 +5,7 @@ import 'package:flalien/reddit/commentSort.dart';
 import 'package:flalien/reddit/postSort.dart';
 import 'package:flalien/reddit/postType.dart';
 import 'package:flalien/reddit/static/sortHelper.dart';
+import 'package:flalien/reddit/timeSort.dart';
 import 'package:http/http.dart' as http;
 import 'package:flalien/reddit/post.dart';
 import 'dart:convert';
@@ -68,13 +69,24 @@ class Reddit {
   }
 
   Future<List<Post>> getPosts(
-      String subreddit, PostSort sort, int postCount) async {
+      String subreddit, PostSort sort, int postCount, TimeSort timeSort) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Post> posts = List<Post>();
 
-    String getUrl =
-        'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$postCount';
+    String getUrl;
+
+    if(sort == PostSort.Controversial || sort == PostSort.Top) {
+      String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
+
+      getUrl =
+      'https://www.reddit.com/r/$subreddit/$stringSort/.json?t=$stringTimeSort&limit=$postCount';
+
+    } else {
+      getUrl =
+          'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$postCount';
+    }
+
 
     String response = await _httpGet(getUrl);
 
@@ -93,18 +105,24 @@ class Reddit {
 
       if (post['is_self']) {
         postType = PostType.Text;
+      } else if (post['is_video']) {
+        postType = PostType.Video;
       } else if (post['post_hint'] == 'link') {
         postType = PostType.Link;
+      } else if (post['post_hint'] == 'image') {
+        postType = PostType.Image;
       } else {
-        postType = PostType.Media;
+        postType = PostType.Link;
       }
 
-      BasePost basePost =
-          BasePost(id, subreddit, title, author, createdUtc, postType);
+      var gildCount = post['gilded'];
+
+      BasePost basePost = BasePost(
+          id, subreddit, title, author, createdUtc, postType, gildCount > 0);
 
       Post postToAdd;
 
-      if (postType == PostType.Media || postType == PostType.Link) {
+      if (postType != PostType.Text) {
         String thumbnail = post['thumbnail'];
         String url = post['url'];
 

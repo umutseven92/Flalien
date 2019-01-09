@@ -8,7 +8,8 @@ class BasePost {
   Author author;
   double createdUtc;
   PostType postType;
+  bool isGilded;
 
   BasePost(this.id, this.subreddit, this.title, this.author, this.createdUtc,
-      this.postType);
+      this.postType, this.isGilded);
 }

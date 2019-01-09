@@ -1,3 +1,4 @@
+import 'package:flalien/static/flalienColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flalien/pages/homePage.dart';
 
@@ -8,13 +9,13 @@ class FlalienApp extends StatelessWidget {
         title: 'Flalien',
         theme: ThemeData(
             brightness: Brightness.light,
-            primaryColor: Color.fromARGB(255, 0, 121, 211),
+            primaryColor: FlalienColors.mainColor,
             fontFamily: 'Montserrat',
             iconTheme: IconThemeData(
-              color: Color.fromARGB(255, 0, 121, 211),
+              color: FlalienColors.mainColor
             ),
             buttonTheme: ButtonThemeData(
-                buttonColor: Color.fromARGB(255, 0, 121, 211),
+                buttonColor: FlalienColors.mainColor
             )
         ),
         home: HomePage());

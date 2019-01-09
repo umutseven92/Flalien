@@ -1,1 +1,1 @@
-enum PostType { Text, Link, Media }
+enum PostType { Text, Link, Video, Image }
