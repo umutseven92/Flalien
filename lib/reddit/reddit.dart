@@ -12,6 +12,9 @@ import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class Reddit {
+
+  static const int POST_LIMIT = 50;
+
   bool isAuthorized() {
     return false;
   }
@@ -69,24 +72,22 @@ class Reddit {
   }
 
   Future<List<Post>> getPosts(
-      String subreddit, PostSort sort, int postCount, TimeSort timeSort) async {
+      String subreddit, PostSort sort, TimeSort timeSort, String after) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Post> posts = List<Post>();
 
-    String getUrl;
+    String getUrl = 'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$POST_LIMIT';
 
     if(sort == PostSort.Controversial || sort == PostSort.Top) {
       String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
 
-      getUrl =
-      'https://www.reddit.com/r/$subreddit/$stringSort/.json?t=$stringTimeSort&limit=$postCount';
-
-    } else {
-      getUrl =
-          'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$postCount';
+      getUrl += '&t=$stringTimeSort';
     }
 
+    if(after != null) {
+      getUrl += '&after=$after';
+    }
 
     String response = await _httpGet(getUrl);
 

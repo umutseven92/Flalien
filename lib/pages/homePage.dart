@@ -18,7 +18,6 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   static const String defaultSubreddit = 'all';
-  static const int defaultPostCount = 50;
 
   String _activeSubreddit;
   List<Post> _posts;
@@ -38,7 +37,7 @@ class HomePageState extends State<HomePage> {
     _activeSubreddit = defaultSubreddit;
     _reddit
         .getPosts(
-            _activeSubreddit, _currentSort, defaultPostCount, _currentTimeSort)
+            _activeSubreddit, _currentSort, _currentTimeSort, null)
         .then((result) {
       setState(() {
         _posts = result;
@@ -142,7 +141,7 @@ class HomePageState extends State<HomePage> {
     });
     _reddit
         .getPosts(
-            _activeSubreddit, _currentSort, defaultPostCount, _currentTimeSort)
+            _activeSubreddit, _currentSort, _currentTimeSort, null)
         .then((result) {
       setState(() {
         _posts = result;
