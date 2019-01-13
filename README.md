@@ -1,2 +1,2 @@
 # Flalien
-Flalien is a reddit browser written using Flutter.
+Flalien is a reddit browser written using Flutter. 
