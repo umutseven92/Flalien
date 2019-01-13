@@ -1,6 +1,7 @@
 import 'package:flalien/reddit/basePost.dart';
 
 class Post {
+  String id;
   BasePost basePost;
   String body;
   String url;
