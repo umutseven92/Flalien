@@ -3,6 +3,7 @@ import 'package:flalien/reddit/postType.dart';
 
 class BasePost {
   String id;
+  String name;
   String subreddit;
   String title;
   Author author;
@@ -10,6 +11,6 @@ class BasePost {
   PostType postType;
   bool isGilded;
 
-  BasePost(this.id, this.subreddit, this.title, this.author, this.createdUtc,
+  BasePost(this.id,this.name, this.subreddit, this.title, this.author, this.createdUtc,
       this.postType, this.isGilded);
 }

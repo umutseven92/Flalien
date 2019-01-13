@@ -97,6 +97,7 @@ class Reddit {
       final post = jsonPost['data'];
 
       String id = post['id'];
+      String name = post['name'];
       String subreddit = post['subreddit_name_prefixed'];
       String title = post['title'];
       Author author = Author(post['author']);
@@ -119,7 +120,7 @@ class Reddit {
       var gildCount = post['gilded'];
 
       BasePost basePost = BasePost(
-          id, subreddit, title, author, createdUtc, postType, gildCount > 0);
+          id, name, subreddit, title, author, createdUtc, postType, gildCount > 0);
 
       Post postToAdd;
 
