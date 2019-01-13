@@ -103,9 +103,8 @@ class HomePageState extends State<HomePage> {
     }
 
     return Drawer(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
+      child:
+          Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         Flexible(
             child:
                 ListView(padding: EdgeInsets.zero, children: drawerListView)),
@@ -301,7 +300,7 @@ class HomePageState extends State<HomePage> {
     return Container(
         child: RaisedButton(
       elevation: 0,
-      padding: EdgeInsets.only(left: 0, top: 5),
+      padding: EdgeInsets.only(left: 0, top: 5, right: 5),
       color: Colors.white,
       onPressed: () => _navigateToPost(post),
       child: Row(children: postRow),
@@ -317,7 +316,22 @@ class HomePageState extends State<HomePage> {
       icons.add(_getPostGoldIcon());
     }
 
+    if (_activeSubreddit == defaultSubreddit) {
+      icons.add(_getSubredditChip(post.basePost.subreddit));
+    }
+
     return icons;
+  }
+
+  Expanded _getSubredditChip(String subredditName) {
+    return Expanded(
+        child: Container(
+            margin: EdgeInsets.only(right: 5),
+            child: Text(
+              subredditName,
+              style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.end,
+            )));
   }
 
   Container _getPostGoldIcon() {
