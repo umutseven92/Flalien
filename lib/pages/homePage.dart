@@ -106,6 +106,7 @@ class HomePageState extends State<HomePage> {
             child:
                 ListView(padding: EdgeInsets.zero, children: drawerListView)),
         Divider(),
+        // TODO: The following need to be stuck to the bottom
         _createIconDrawerTile('Settings', Icons.settings, () {}),
         _createIconDrawerTile('Exit', Icons.exit_to_app, () {}),
       ]),

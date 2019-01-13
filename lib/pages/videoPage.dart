@@ -11,6 +11,7 @@ class VideoPage extends StatefulWidget {
   State<StatefulWidget> createState() => VideoPageState(url);
 }
 
+//TODO: Stop video playback if the user presses back
 class VideoPageState extends State<VideoPage> {
   String url;
   VideoPlayerController _controller;
