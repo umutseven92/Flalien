@@ -1,6 +1,6 @@
+import 'package:flalien/pages/homePage.dart';
 import 'package:flalien/static/flalienColors.dart';
 import 'package:flutter/material.dart';
-import 'package:flalien/pages/homePage.dart';
 
 class FlalienApp extends StatelessWidget {
   @override
@@ -11,13 +11,8 @@ class FlalienApp extends StatelessWidget {
             brightness: Brightness.light,
             primaryColor: FlalienColors.mainColor,
             fontFamily: 'Montserrat',
-            iconTheme: IconThemeData(
-              color: FlalienColors.mainColor
-            ),
-            buttonTheme: ButtonThemeData(
-                buttonColor: FlalienColors.mainColor
-            )
-        ),
+            iconTheme: IconThemeData(color: FlalienColors.mainColor),
+            buttonTheme: ButtonThemeData(buttonColor: FlalienColors.mainColor)),
         home: HomePage());
   }
 }

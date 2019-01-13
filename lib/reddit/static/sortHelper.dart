@@ -1,7 +1,6 @@
 import 'package:flalien/reddit/timeSort.dart';
 
 class SortHelper {
-
   static String getStringValueOfSort<T>(T sort) {
     String stringSort = sort.toString().split('.').last.toLowerCase();
 
@@ -15,7 +14,7 @@ class SortHelper {
   }
 
   static String getFriendlyStringValueOfTimeSort(TimeSort sort) {
-    switch(sort) {
+    switch (sort) {
       case TimeSort.All:
         return 'All time';
       case TimeSort.Day:
