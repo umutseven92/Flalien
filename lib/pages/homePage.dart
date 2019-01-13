@@ -1,14 +1,14 @@
 import 'package:flalien/pages/imagePage.dart';
 import 'package:flalien/pages/postPage.dart';
 import 'package:flalien/pages/videoPage.dart';
-import 'package:flalien/reddit/post.dart';
-import 'package:flalien/reddit/postType.dart';
+import 'package:flalien/reddit/post/post.dart';
+import 'package:flalien/reddit/post/postSort.dart';
+import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:flalien/reddit/timeSort.dart';
 import 'package:flalien/static/flalienColors.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
-import 'package:flalien/reddit/postSort.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
