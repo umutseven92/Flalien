@@ -103,13 +103,13 @@ class HomePageState extends State<HomePage> {
     }
 
     return Drawer(
-      child: Column(children: <Widget>[
-        Container(
-            height: 450,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+        Flexible(
             child:
                 ListView(padding: EdgeInsets.zero, children: drawerListView)),
         Divider(),
-        // TODO: The following need to be stuck to the bottom
         _createIconDrawerTile('Settings', Icons.settings, () {}),
         _createIconDrawerTile('Exit', Icons.exit_to_app, () {}),
       ]),
