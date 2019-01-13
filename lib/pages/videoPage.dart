@@ -11,7 +11,6 @@ class VideoPage extends StatefulWidget {
   State<StatefulWidget> createState() => VideoPageState(url);
 }
 
-//TODO: Stop video playback if the user presses back
 class VideoPageState extends State<VideoPage> {
   String url;
   VideoPlayerController _controller;
@@ -36,28 +35,36 @@ class VideoPageState extends State<VideoPage> {
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
-      });
+      })
+      ..setLooping(true)
+      ..play();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(Uri.parse(url).host)),
-      body: Center(
-        child: _controller.value.initialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : LoadingWidget(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:
-            _controller.value.isPlaying ? _controller.pause : _controller.play,
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () async {
+          _controller.pause();
+          return true;
+        },
+        child: Scaffold(
+          appBar: AppBar(title: Text(Uri.parse(url).host)),
+          body: Center(
+            child: _controller.value.initialized
+                ? AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  )
+                : LoadingWidget(),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _controller.value.isPlaying
+                ? _controller.pause
+                : _controller.play,
+            child: Icon(
+              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            ),
+          ),
+        ));
   }
 }
