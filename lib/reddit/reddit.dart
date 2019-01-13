@@ -1,18 +1,18 @@
+import 'dart:convert';
+
 import 'package:flalien/reddit/author.dart';
 import 'package:flalien/reddit/basePost.dart';
-import 'package:flalien/reddit/comment.dart';
-import 'package:flalien/reddit/commentSort.dart';
-import 'package:flalien/reddit/postSort.dart';
-import 'package:flalien/reddit/postType.dart';
+import 'package:flalien/reddit/comment/comment.dart';
+import 'package:flalien/reddit/comment/commentSort.dart';
+import 'package:flalien/reddit/post/post.dart';
+import 'package:flalien/reddit/post/postSort.dart';
+import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:flalien/reddit/timeSort.dart';
 import 'package:http/http.dart' as http;
-import 'package:flalien/reddit/post.dart';
-import 'dart:convert';
 import 'package:uuid/uuid.dart';
 
 class Reddit {
-
   static const int POST_LIMIT = 50;
 
   bool isAuthorized() {
@@ -77,15 +77,16 @@ class Reddit {
 
     List<Post> posts = List<Post>();
 
-    String getUrl = 'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$POST_LIMIT';
+    String getUrl =
+        'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$POST_LIMIT';
 
-    if(sort == PostSort.Controversial || sort == PostSort.Top) {
+    if (sort == PostSort.Controversial || sort == PostSort.Top) {
       String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
 
       getUrl += '&t=$stringTimeSort';
     }
 
-    if(after != null) {
+    if (after != null) {
       getUrl += '&after=$after';
     }
 
@@ -119,8 +120,8 @@ class Reddit {
 
       var gildCount = post['gilded'];
 
-      BasePost basePost = BasePost(
-          id, name, subreddit, title, author, createdUtc, postType, gildCount > 0);
+      BasePost basePost = BasePost(id, name, subreddit, title, author,
+          createdUtc, postType, gildCount > 0);
 
       Post postToAdd;
 

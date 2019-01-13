@@ -1,1 +1,1 @@
-enum TimeSort { Hour, Day, Week, Month, Year, All}
+enum TimeSort { Hour, Day, Week, Month, Year, All }

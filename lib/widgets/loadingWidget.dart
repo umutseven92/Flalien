@@ -5,5 +5,4 @@ class LoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircularProgressIndicator();
   }
-
 }

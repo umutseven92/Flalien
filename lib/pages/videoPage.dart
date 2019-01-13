@@ -1,6 +1,6 @@
-import 'package:video_player/video_player.dart';
-import 'package:flutter/material.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
+import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 class VideoPage extends StatefulWidget {
   final String url;
@@ -17,8 +17,8 @@ class VideoPageState extends State<VideoPage> {
   VideoPlayerController _controller;
   bool _isPlaying = false;
 
-  VideoPageState(String url){
-   this.url = "$url/HLSPlaylist.m3u8";
+  VideoPageState(String url) {
+    this.url = "$url/HLSPlaylist.m3u8";
   }
 
   @override

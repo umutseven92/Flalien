@@ -1,12 +1,12 @@
-import 'package:flalien/reddit/comment.dart';
-import 'package:flalien/reddit/commentSort.dart';
-import 'package:flalien/reddit/post.dart';
-import 'package:flalien/reddit/postType.dart';
+import 'package:flalien/reddit/comment/comment.dart';
+import 'package:flalien/reddit/comment/commentSort.dart';
+import 'package:flalien/reddit/post/post.dart';
+import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 
 class PostPage extends StatefulWidget {
   final Post _post;
@@ -62,7 +62,7 @@ class PostPageState extends State<PostPage> {
   @override
   void initState() {
     _reddit.getComments(_post, CommentSort.Best).then((result) {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           this._comments = result;
         });
@@ -111,9 +111,7 @@ class PostPageState extends State<PostPage> {
           postSection,
           Container(
               margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-              child: Center(
-                child: LoadingWidget()
-              ))
+              child: Center(child: LoadingWidget()))
         ],
       );
     } else {
