@@ -8,6 +8,7 @@ import 'package:flalien/reddit/post/post.dart';
 import 'package:flalien/reddit/post/postSort.dart';
 import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/static/sortHelper.dart';
+import 'package:flalien/reddit/subreddit.dart';
 import 'package:flalien/reddit/timeSort.dart';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
@@ -19,66 +20,66 @@ class Reddit {
     return false;
   }
 
-  List<String> getDefaultSubreddits() {
+  List<Subreddit> getDefaultSubreddits() {
     return [
-      'announcements',
-      'Art',
-      'AskReddit',
-      'askscience',
-      'aww',
-      'blog',
-      'books',
-      'creepy',
-      'dataisbeautiful',
-      'DIY',
-      'Documentaries',
-      'EarthPorn',
-      'explainlikeimfive',
-      'food',
-      'funny',
-      'Futurology',
-      'gadgets',
-      'gaming',
-      'GetMotivated',
-      'gifs',
-      'history',
-      'IAmA',
-      'InternetIsBeautiful',
-      'Jokes',
-      'LifeProTips',
-      'listentothis',
-      'mildlyinteresting',
-      'movies',
-      'Music',
-      'news',
-      'nosleep',
-      'nottheonion',
-      'OldSchoolCool',
-      'personalfinance',
-      'philosophy',
-      'photoshopbattles',
-      'pics',
-      'science',
-      'Showerthoughts',
-      'space',
-      'sports',
-      'television',
-      'tifu',
-      'todayilearned',
-      'UpliftingNews',
-      'videos',
-      'worldnews'
+      Subreddit('announcements',
+      Subreddit('Art',
+      Subreddit('AskReddit',
+      Subreddit('askscience',
+      Subreddit('aww',
+      Subreddit('blog',
+      Subreddit('books',
+      Subreddit('creepy',
+      Subreddit('dataisbeautiful',
+      Subreddit('DIY',
+      Subreddit('Documentaries',
+      Subreddit('EarthPorn',
+      Subreddit('explainlikeimfive',
+      Subreddit('food',
+      Subreddit('funny',
+      Subreddit('Futurology',
+      Subreddit('gadgets',
+      Subreddit('gaming',
+      Subreddit('GetMotivated',
+      Subreddit('gifs',
+      Subreddit('history',
+      Subreddit('IAmA',
+      Subreddit('InternetIsBeautiful',
+      Subreddit('Jokes',
+      Subreddit('LifeProTips',
+      Subreddit('listentothis',
+      Subreddit('mildlyinteresting',
+      Subreddit('movies',
+      Subreddit('Music',
+      Subreddit('news',
+      Subreddit('nosleep',
+      Subreddit('nottheonion',
+      Subreddit('OldSchoolCool',
+      Subreddit('personalfinance',
+      Subreddit('philosophy',
+      Subreddit('photoshopbattles',
+      Subreddit('pics',
+      Subreddit('science',
+      Subreddit('Showerthoughts',
+      Subreddit('space',
+      Subreddit('sports',
+      Subreddit('television',
+      Subreddit('tifu',
+      Subreddit('todayilearned',
+      Subreddit('UpliftingNews',
+      Subreddit('videos',
+      Subreddit('worldnews'
     ];
   }
 
   Future<List<Post>> getPosts(
-      String subreddit, PostSort sort, TimeSort timeSort, String after) async {
+      Subreddit subreddit, PostSort sort, TimeSort timeSort, String after) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Post> posts = List<Post>();
 
     String getUrl =
-        'https://www.reddit.com/r/$subreddit/$stringSort/.json?limit=$POST_LIMIT';
+        'https://www.reddit.com/r/${subreddit.name}/$stringSort/.json?limit=$POST_LIMIT';
 
     if (sort == PostSort.Controversial || sort == PostSort.Top) {
       String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
