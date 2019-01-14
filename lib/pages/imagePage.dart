@@ -2,10 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 
-class ImagePage extends StatelessWidget {
+class ImagePage extends StatefulWidget {
+  final String url;
+
+  ImagePage(this.url);
+
+  @override
+  State<StatefulWidget> createState() {
+    return ImagePageState(this.url);
+  }
+}
+
+class ImagePageState extends State<ImagePage> {
   String cleanMediaUrl;
 
-  ImagePage(String mediaUrl) {
+  ImagePageState(String mediaUrl) {
     if (mediaUrl.contains('imgur')) {
       var cleaned = mediaUrl.replaceFirst('imgur', '0imgur');
       this.cleanMediaUrl = cleaned;

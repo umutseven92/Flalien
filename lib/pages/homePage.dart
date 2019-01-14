@@ -465,7 +465,7 @@ class HomePageState extends State<HomePage> {
           color: Colors.white,
           child: Column(
             children: <Widget>[
-              Row(children: filters),
+              Row(children: filters, mainAxisAlignment: MainAxisAlignment.start,),
               Expanded(child: ListView.builder(itemBuilder: (context, i) {
                 if (i.isOdd) {
                   return Divider();
