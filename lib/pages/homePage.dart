@@ -1,11 +1,13 @@
 import 'package:flalien/pages/imagePage.dart';
 import 'package:flalien/pages/postPage.dart';
+import 'package:flalien/pages/searchPage.dart';
 import 'package:flalien/pages/videoPage.dart';
 import 'package:flalien/reddit/post/post.dart';
 import 'package:flalien/reddit/post/postSort.dart';
 import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flalien/reddit/static/sortHelper.dart';
+import 'package:flalien/reddit/subreddit.dart';
 import 'package:flalien/reddit/timeSort.dart';
 import 'package:flalien/static/flalienColors.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
@@ -21,10 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  static const String defaultSubreddit = 'all';
+  static Subreddit defaultSubreddit = Subreddit('all');
 
   BuildContext _context;
-  String _activeSubreddit;
+  Subreddit _activeSubreddit;
   List<Post> _posts;
   PostSort _currentSort;
   TimeSort _currentTimeSort;
@@ -51,11 +53,11 @@ class HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  ListTile _createDrawerSubreddit(String subredditName) {
+  ListTile _createDrawerSubreddit(Subreddit subreddit) {
     return ListTile(
-      title: Text(subredditName),
+      title: Text(subreddit.name),
       onTap: () {
-        _activeSubreddit = subredditName;
+        _activeSubreddit = subreddit;
         _currentSort = PostSort.Hot;
 
         _refreshPosts();
@@ -65,7 +67,7 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-  ListTile _createIconDrawerTile(String title, IconData icon, Function onTap) {
+  ListTile _createIconDrawerTile(String title, IconData icon, Function tap) {
     return ListTile(
       title: Row(
         children: <Widget>[
@@ -77,8 +79,7 @@ class HomePageState extends State<HomePage> {
         ],
       ),
       onTap: () {
-        onTap();
-        Navigator.pop(context);
+        tap();
       },
     );
   }
@@ -95,7 +96,7 @@ class HomePageState extends State<HomePage> {
         ),
       );
 
-      drawerListView.add(_createDrawerSubreddit('all'));
+      drawerListView.add(_createDrawerSubreddit(Subreddit('all')));
 
       _reddit.getDefaultSubreddits().forEach((subreddit) {
         drawerListView.add(_createDrawerSubreddit(subreddit));
@@ -103,15 +104,19 @@ class HomePageState extends State<HomePage> {
     }
 
     return Drawer(
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        Flexible(
-            child:
-                ListView(padding: EdgeInsets.zero, children: drawerListView)),
-        Divider(),
-        _createIconDrawerTile('Settings', Icons.settings, () {}),
-        _createIconDrawerTile('Exit', Icons.exit_to_app, () {}),
-      ]),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Flexible(
+                child: ListView(
+                    padding: EdgeInsets.zero, children: drawerListView)),
+            Divider(),
+            _createIconDrawerTile(
+                'Search for subreddit', Icons.search, _navigateToSearchPage),
+            _createIconDrawerTile('Settings', Icons.settings, () {}),
+            _createIconDrawerTile('Exit', Icons.exit_to_app, () {}),
+          ]),
     );
   }
 
@@ -367,6 +372,13 @@ class HomePageState extends State<HomePage> {
     return icon;
   }
 
+  void _navigateToSearchPage() {
+    Navigator.of(_context)
+        .push(MaterialPageRoute(builder: (BuildContext context) {
+      return SearchPage();
+    }));
+  }
+
   void _navigateToPost(Post post) {
     Navigator.of(_context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -465,7 +477,10 @@ class HomePageState extends State<HomePage> {
           color: Colors.white,
           child: Column(
             children: <Widget>[
-              Row(children: filters, mainAxisAlignment: MainAxisAlignment.start,),
+              Row(
+                children: filters,
+                mainAxisAlignment: MainAxisAlignment.start,
+              ),
               Expanded(child: ListView.builder(itemBuilder: (context, i) {
                 if (i.isOdd) {
                   return Divider();
@@ -500,7 +515,7 @@ class HomePageState extends State<HomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(_activeSubreddit),
+          title: Text(_activeSubreddit.name),
         ),
         drawer: _createDrawer(),
         body: body);
