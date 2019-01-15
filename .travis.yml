@@ -1,44 +1,48 @@
 branches:
   only:
-    - master
-    - develop
-
+  - master
+  - develop
 os: linux
 language: android
 licenses:
-  - 'android-sdk-preview-license-.+'
-  - 'android-sdk-license-.+'
-  - 'google-gdk-license-.+'
+- android-sdk-preview-license-.+
+- android-sdk-license-.+
+- google-gdk-license-.+
 android:
   components:
-    - tools
-    - platform-tools
-    - build-tools-28.0.3
-    - android-27
-    - android-28
-    - sys-img-armeabi-v7a-google_apis-25
-    - extra-android-m2repository
-    - extra-google-m2repository
-    - extra-google-android-support
+  - tools
+  - platform-tools
+  - build-tools-28.0.3
+  - android-27
+  - android-28
+  - sys-img-armeabi-v7a-google_apis-25
+  - extra-android-m2repository
+  - extra-google-m2repository
+  - extra-google-android-support
 jdk: oraclejdk8
 sudo: false
 addons:
   apt:
-    # Flutter depends on /usr/lib/x86_64-linux-gnu/libstdc++.so.6 version GLIBCXX_3.4.18
     sources:
-      - ubuntu-toolchain-r-test # if we don't specify this, the libstdc++6 we get is the wrong version
+    - ubuntu-toolchain-r-test
     packages:
-      - libstdc++6
-      - fonts-droid
+    - libstdc++6
+    - fonts-droid
 before_script:
-  - wget http://services.gradle.org/distributions/gradle-3.5-bin.zip
-  - unzip -qq gradle-3.5-bin.zip
-  - export GRADLE_HOME=$PWD/gradle-3.5
-  - export PATH=$GRADLE_HOME/bin:$PATH
-  - git clone https://github.com/flutter/flutter.git -b beta --depth 1
+- wget http://services.gradle.org/distributions/gradle-3.5-bin.zip
+- unzip -qq gradle-3.5-bin.zip
+- export GRADLE_HOME=$PWD/gradle-3.5
+- export PATH=$GRADLE_HOME/bin:$PATH
+- git clone https://github.com/flutter/flutter.git -b beta --depth 1
 script:
-  - ./flutter/bin/flutter -v build apk
-
+- "./flutter/bin/flutter -v build apk"
 cache:
   directories:
-    - $HOME/.pub-cache
+  - "$HOME/.pub-cache"
+deploy:
+  provider: releases
+  api_key:
+    secure: XU5S7MuL0+iO2Ygz/vVyWbFyilT62z/fqysCXiDItl9lS4kiQoyh/pKAD7HY7Ht4/kLmD1/G7Ydj/WuQzag+B5a5cZG6U2s4nXqvvVoh/aAfOKXewO68uWfXJD800V4DicouEjKIa8I8Vn7IU7JJjg4kxCLcxERuTzOJPJMS3fDKsfF5FNNLMv6I3Ke2ruoYjlEj9OnpJegc22YhXn10In1qR9v6/eOdwwmNpDbKMupR+2f4eHWklHrTIrlb+ASHE/qaR2dsEAnO9VKq9QqL+nDzK1PejOD5Efv7uNBG2drBEuNHeWBwF6Z1E2DCVOxuvzs1cmgTe+HXUi3cl8cYMeBZTcoQ/Za4D4zTJHdQyGti6smGza06ueJB1Bv2vObOnzXjOyv2BhPk16X7wElG1UkV/EPAHoiQZl75dVAy1i/743UXmLpwwenb9UkejISqJLKeDgiyCHnfD/KJ7llL3pldjj9OI6RRVj+PzzTZHmtmGc3UWqRnqeDBwqZn0z31gsTvZB05NGetmekB0HhQ+RXudbUOy1/bJiIv5IrTEUyMBIk+Y/RnXk6JqXriWbM0Font/0ujC1WPeArEoGJhMmlkhU77DTVHocVRJCqltWyvUuTwSD6M9kQYQPqrgSvdxydcto6BfMKc8kSAgt3nJVPc/A425aEpEC4WsyhM+2g=
+  file: build/app/outputs/apk/release/app-release.apk
+  on:
+    repo: umutseven92/Flalien
