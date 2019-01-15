@@ -8,8 +8,8 @@ Flalien is a Reddit browser written using Flutter.
 * Post thumbnails (including NSFW and spoiler thumbnails)
 * Post content and top level comments (with Markdown support)
 * Image, gif and video view
+* Search for a subreddit
 
 ## Todo
-* Search for a subreddit
 * Display all comments, not just top level ones
 * Ability to log in and upvote
