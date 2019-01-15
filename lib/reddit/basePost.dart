@@ -1,10 +1,11 @@
 import 'package:flalien/reddit/author.dart';
 import 'package:flalien/reddit/post/postType.dart';
+import 'package:flalien/reddit/subreddit.dart';
 
 class BasePost {
   String id;
   String name;
-  String subreddit;
+  Subreddit subreddit;
   String title;
   Author author;
   double createdUtc;

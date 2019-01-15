@@ -11,7 +11,6 @@ import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:flalien/reddit/subreddit.dart';
 import 'package:flalien/reddit/timeSort.dart';
 import 'package:http/http.dart' as http;
-import 'package:uuid/uuid.dart';
 
 class Reddit {
   static const int POST_LIMIT = 50;
@@ -22,58 +21,58 @@ class Reddit {
 
   List<Subreddit> getDefaultSubreddits() {
     return [
-      Subreddit('announcements',
-      Subreddit('Art',
-      Subreddit('AskReddit',
-      Subreddit('askscience',
-      Subreddit('aww',
-      Subreddit('blog',
-      Subreddit('books',
-      Subreddit('creepy',
-      Subreddit('dataisbeautiful',
-      Subreddit('DIY',
-      Subreddit('Documentaries',
-      Subreddit('EarthPorn',
-      Subreddit('explainlikeimfive',
-      Subreddit('food',
-      Subreddit('funny',
-      Subreddit('Futurology',
-      Subreddit('gadgets',
-      Subreddit('gaming',
-      Subreddit('GetMotivated',
-      Subreddit('gifs',
-      Subreddit('history',
-      Subreddit('IAmA',
-      Subreddit('InternetIsBeautiful',
-      Subreddit('Jokes',
-      Subreddit('LifeProTips',
-      Subreddit('listentothis',
-      Subreddit('mildlyinteresting',
-      Subreddit('movies',
-      Subreddit('Music',
-      Subreddit('news',
-      Subreddit('nosleep',
-      Subreddit('nottheonion',
-      Subreddit('OldSchoolCool',
-      Subreddit('personalfinance',
-      Subreddit('philosophy',
-      Subreddit('photoshopbattles',
-      Subreddit('pics',
-      Subreddit('science',
-      Subreddit('Showerthoughts',
-      Subreddit('space',
-      Subreddit('sports',
-      Subreddit('television',
-      Subreddit('tifu',
-      Subreddit('todayilearned',
-      Subreddit('UpliftingNews',
-      Subreddit('videos',
-      Subreddit('worldnews'
+      Subreddit('announcements'),
+      Subreddit('Art'),
+      Subreddit('AskReddit'),
+      Subreddit('askscience'),
+      Subreddit('aww'),
+      Subreddit('blog'),
+      Subreddit('books'),
+      Subreddit('creepy'),
+      Subreddit('dataisbeautiful'),
+      Subreddit('DIY'),
+      Subreddit('Documentaries'),
+      Subreddit('EarthPorn'),
+      Subreddit('explainlikeimfive'),
+      Subreddit('food'),
+      Subreddit('funny'),
+      Subreddit('Futurology'),
+      Subreddit('gadgets'),
+      Subreddit('gaming'),
+      Subreddit('GetMotivated'),
+      Subreddit('gifs'),
+      Subreddit('history'),
+      Subreddit('IAmA'),
+      Subreddit('InternetIsBeautiful'),
+      Subreddit('Jokes'),
+      Subreddit('LifeProTips'),
+      Subreddit('listentothis'),
+      Subreddit('mildlyinteresting'),
+      Subreddit('movies'),
+      Subreddit('Music'),
+      Subreddit('news'),
+      Subreddit('nosleep'),
+      Subreddit('nottheonion'),
+      Subreddit('OldSchoolCool'),
+      Subreddit('personalfinance'),
+      Subreddit('philosophy'),
+      Subreddit('photoshopbattles'),
+      Subreddit('pics'),
+      Subreddit('science'),
+      Subreddit('Showerthoughts'),
+      Subreddit('space'),
+      Subreddit('sports'),
+      Subreddit('television'),
+      Subreddit('tifu'),
+      Subreddit('todayilearned'),
+      Subreddit('UpliftingNews'),
+      Subreddit('videos'),
+      Subreddit('worldnews')
     ];
   }
 
-  Future<List<Post>> getPosts(
-      Subreddit subreddit, PostSort sort, TimeSort timeSort, String after) async {
+  Future<List<Post>> getPosts(Subreddit subreddit, PostSort sort,
+      TimeSort timeSort, String after) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
 
     List<Post> posts = List<Post>();
@@ -100,7 +99,7 @@ class Reddit {
 
       String id = post['id'];
       String name = post['name'];
-      String subreddit = post['subreddit_name_prefixed'];
+      Subreddit subreddit = Subreddit(post['subreddit_name_prefixed']);
       String title = post['title'];
       Author author = Author(post['author']);
       double createdUtc = post['created_utc'];
@@ -149,7 +148,7 @@ class Reddit {
     List<Comment> comments = List<Comment>();
 
     String url =
-        'https://www.reddit.com/${post.basePost.subreddit}/comments/${post.basePost.id}.json?sort=$stringSort';
+        'https://www.reddit.com/${post.basePost.subreddit.name}/comments/${post.basePost.id}.json?sort=$stringSort';
 
     String response = await _httpGet(url);
 
@@ -169,27 +168,35 @@ class Reddit {
     return comments;
   }
 
-  Future<String> _httpGet(String url) async {
-    http.Response response = await http.get(url);
+  Future<List<Subreddit>> searchSubreddits(String query,
+      {bool includeNSFW = true}) async {
+    List<Subreddit> subreddits = List<Subreddit>();
 
-    assert(response.statusCode == 200);
-    return response.body;
+    String url =
+        'https://www.reddit.com/subreddits/search.json?q=$query&include_over_18=on';
+
+    String response = await _httpGet(url);
+
+    var jsonSubreddits = jsonDecode(response);
+
+    for (var jsonSubreddit in jsonSubreddits['data']['children']) {
+      var subreddit = jsonSubreddit['data'];
+
+      String name = subreddit['display_name'];
+      String pic = subreddit['community_icon'];
+
+      if(pic == "") {
+        pic = subreddit['icon_img'];
+      }
+
+      subreddits.add(Subreddit(name)..thumbnail = pic);
+    }
+
+    return subreddits;
   }
 
-  @Deprecated('Not tested yet, do not use')
-  Future<String> _authorizeReddit() async {
-    final deviceId = Uuid().v4();
-    final clientId = 'SLbS_fAc46zy1Q';
-    final password = 'nopassword';
-    final url = 'https://www.reddit.com/api/v1/access_token';
-    final grantType = 'https://oauth.reddit.com/grants/installed_client';
-
-    String basicAuth =
-        'Basic ' + base64Encode(utf8.encode('$clientId:$password'));
-
-    http.Response response = await http.post(url,
-        body: {'grant_type': grantType, 'device_id': deviceId.toString()},
-        headers: {'authorization': basicAuth});
+  Future<String> _httpGet(String url) async {
+    http.Response response = await http.get(url);
 
     assert(response.statusCode == 200);
     return response.body;
