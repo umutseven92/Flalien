@@ -129,7 +129,7 @@ class PostPageState extends State<PostPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(_post.basePost.subreddit),
+          title: Text(_post.basePost.subreddit.name),
         ),
         body: fullSection);
   }

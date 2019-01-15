@@ -16,15 +16,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
+  Subreddit _subreddit;
+
+  HomePage(this._subreddit);
+
   @override
   State<StatefulWidget> createState() {
-    return HomePageState();
+    return HomePageState(_subreddit);
   }
 }
 
 class HomePageState extends State<HomePage> {
-  static Subreddit defaultSubreddit = Subreddit('all');
-
   BuildContext _context;
   Subreddit _activeSubreddit;
   List<Post> _posts;
@@ -33,7 +35,8 @@ class HomePageState extends State<HomePage> {
 
   Reddit _reddit;
 
-  HomePageState() {
+  HomePageState(Subreddit subreddit) {
+    _activeSubreddit = subreddit;
     _reddit = Reddit();
     _currentSort = PostSort.Hot;
     _currentTimeSort = TimeSort.Day;
@@ -41,7 +44,6 @@ class HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _activeSubreddit = defaultSubreddit;
     _reddit
         .getPosts(_activeSubreddit, _currentSort, _currentTimeSort, null)
         .then((result) {
@@ -69,15 +71,12 @@ class HomePageState extends State<HomePage> {
 
   ListTile _createIconDrawerTile(String title, IconData icon, Function tap) {
     return ListTile(
-      title: Row(
-        children: <Widget>[
-          Icon(icon),
-          Expanded(
-            child: Container(
-                margin: EdgeInsets.only(left: 10), child: Text(title)),
-          )
-        ],
+      dense: true,
+      leading: Icon(
+        icon,
+        color: FlalienColors.mainColor,
       ),
+      title: Container(child: Text(title)),
       onTap: () {
         tap();
       },
@@ -265,7 +264,9 @@ class HomePageState extends State<HomePage> {
                   color: Colors.red, fontWeight: FontWeight.bold, fontSize: 15),
             ),
             post.url);
-      } else if (post.thumbnail == 'default' || post.thumbnail == 'image') {
+      } else if (post.thumbnail == 'default' ||
+          post.thumbnail == 'image' ||
+          post.thumbnail == '') {
         thumbnail = thumbnailCreate(Icon(Icons.link), post.url);
       } else {
         thumbnail = thumbnailCreate(
@@ -321,8 +322,8 @@ class HomePageState extends State<HomePage> {
       icons.add(_getPostGoldIcon());
     }
 
-    if (_activeSubreddit == defaultSubreddit) {
-      icons.add(_getSubredditChip(post.basePost.subreddit));
+    if (_activeSubreddit.name == 'all') {
+      icons.add(_getSubredditChip(post.basePost.subreddit.name));
     }
 
     return icons;
@@ -375,7 +376,7 @@ class HomePageState extends State<HomePage> {
   void _navigateToSearchPage() {
     Navigator.of(_context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
-      return SearchPage();
+      return SearchPage(_reddit);
     }));
   }
 
