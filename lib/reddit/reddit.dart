@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flalien/reddit/author.dart';
-import 'package:flalien/reddit/basePost.dart';
+import 'package:flalien/reddit/post/basePost.dart';
 import 'package:flalien/reddit/comment/comment.dart';
 import 'package:flalien/reddit/comment/commentSort.dart';
 import 'package:flalien/reddit/post/post.dart';

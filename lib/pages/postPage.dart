@@ -3,6 +3,7 @@ import 'package:flalien/reddit/comment/commentSort.dart';
 import 'package:flalien/reddit/post/post.dart';
 import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
+import 'package:flalien/reddit/static/commentHelper.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -21,6 +22,9 @@ class PostPage extends StatefulWidget {
 }
 
 class PostPageState extends State<PostPage> {
+
+  static const int MAX_LEVELS = 3;
+
   Post _post;
   Reddit _reddit;
   List<Comment> _comments;
@@ -32,10 +36,10 @@ class PostPageState extends State<PostPage> {
 
     widgets.add(Container(
         margin: EdgeInsets.only(top: 10, left: 15, right: 15),
-        child: Text('${_comments.length} Comments:',
+        child: Text('${CommentHelper.countCommentsRecursively(_comments)} Comments:',
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
-    _comments.take(50).forEach((comment) {
+    _comments.forEach((comment) {
       widgets.add(Container(
           margin: EdgeInsets.only(left: 10, right: 10),
           width: 600,
