@@ -145,7 +145,6 @@ class Reddit {
   Future<List<Comment>> getComments(Post post, CommentSort sort) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
 
-    List<Comment> comments = List<Comment>();
 
     String url =
         'https://www.reddit.com/${post.basePost.subreddit.name}/comments/${post.basePost.id}.json?sort=$stringSort';
@@ -154,18 +153,47 @@ class Reddit {
 
     var jsonComments = jsonDecode(response);
 
+    return parseComments(jsonComments);
+
+  }
+
+  List<Comment> parseComments(dynamic jsonComments) {
+    List<Comment> comments = List<Comment>();
+
     for (var jsonComment in jsonComments[1]['data']['children']) {
-      var comment = jsonComment['data'];
+      var commentJson = jsonComment['data'];
+      Comment comment = _parseComment(commentJson);
 
-      String body = comment['body'];
-      Author author = Author(comment['author']);
-
-      if (body != null && author != null) {
-        comments.add(Comment(body, author));
-      }
+      comments.add(comment);
     }
 
     return comments;
+  }
+
+  Comment _parseComment(dynamic commentJson) {
+    String body = commentJson['body'];
+    Author author = Author(commentJson['author']);
+
+    Comment comment = Comment(body, author);
+
+    var replies = commentJson['replies'];
+
+
+    if(replies != '' && replies != []) {
+      var children = replies['data']['children'];
+
+      for(var reply in children) {
+        var childCommentJson = reply['data'];
+        Comment childComment = _parseComment(childCommentJson);
+        comment.childComments.add(childComment);
+      }
+    }
+
+    if (body != null && author != null) {
+      return comment;
+    } else {
+      return null;
+    }
   }
 
   Future<List<Subreddit>> searchSubreddits(String query,
