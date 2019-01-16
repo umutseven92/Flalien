@@ -44,5 +44,6 @@ deploy:
   api_key:
     secure: XU5S7MuL0+iO2Ygz/vVyWbFyilT62z/fqysCXiDItl9lS4kiQoyh/pKAD7HY7Ht4/kLmD1/G7Ydj/WuQzag+B5a5cZG6U2s4nXqvvVoh/aAfOKXewO68uWfXJD800V4DicouEjKIa8I8Vn7IU7JJjg4kxCLcxERuTzOJPJMS3fDKsfF5FNNLMv6I3Ke2ruoYjlEj9OnpJegc22YhXn10In1qR9v6/eOdwwmNpDbKMupR+2f4eHWklHrTIrlb+ASHE/qaR2dsEAnO9VKq9QqL+nDzK1PejOD5Efv7uNBG2drBEuNHeWBwF6Z1E2DCVOxuvzs1cmgTe+HXUi3cl8cYMeBZTcoQ/Za4D4zTJHdQyGti6smGza06ueJB1Bv2vObOnzXjOyv2BhPk16X7wElG1UkV/EPAHoiQZl75dVAy1i/743UXmLpwwenb9UkejISqJLKeDgiyCHnfD/KJ7llL3pldjj9OI6RRVj+PzzTZHmtmGc3UWqRnqeDBwqZn0z31gsTvZB05NGetmekB0HhQ+RXudbUOy1/bJiIv5IrTEUyMBIk+Y/RnXk6JqXriWbM0Font/0ujC1WPeArEoGJhMmlkhU77DTVHocVRJCqltWyvUuTwSD6M9kQYQPqrgSvdxydcto6BfMKc8kSAgt3nJVPc/A425aEpEC4WsyhM+2g=
   file: /home/travis/build/umutseven92/Flalien/build/app/outputs/apk/release/app-release.apk
+  skip_cleanup: true
   on:
-    repo: umutseven92/Flalien
+    tags: true
