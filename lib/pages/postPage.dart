@@ -22,7 +22,6 @@ class PostPage extends StatefulWidget {
 }
 
 class PostPageState extends State<PostPage> {
-
   static const int MAX_LEVELS = 3;
 
   Post _post;
@@ -36,7 +35,8 @@ class PostPageState extends State<PostPage> {
 
     widgets.add(Container(
         margin: EdgeInsets.only(top: 10, left: 15, right: 15),
-        child: Text('${CommentHelper.countCommentsRecursively(_comments)} Comments:',
+        child: Text(
+            '${CommentHelper.countCommentsRecursively(_comments)} Comments:',
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
     _comments.forEach((comment) {
