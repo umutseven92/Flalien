@@ -13,6 +13,8 @@ class PostPage extends StatefulWidget {
   final Post _post;
   final Reddit _reddit;
 
+  static const int MAX_CHILD_COMMENTS = 3;
+
   PostPage(this._post, this._reddit);
 
   @override
@@ -23,6 +25,7 @@ class PostPage extends StatefulWidget {
 
 class PostPageState extends State<PostPage> {
   static const int MAX_LEVELS = 3;
+  static const int MAX_CHILD_COMMENTS = 3;
 
   Post _post;
   Reddit _reddit;
@@ -39,28 +42,54 @@ class PostPageState extends State<PostPage> {
             '${CommentHelper.countCommentsRecursively(_comments)} Comments:',
             style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
-    _comments.forEach((comment) {
-      widgets.add(Container(
-          margin: EdgeInsets.only(left: 10, right: 10),
-          width: 600,
-          child: Card(
-            child: Container(
-                padding: EdgeInsets.all(6),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      comment.author.name,
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    MarkdownBody(data: comment.body)
-                  ],
-                )),
-          )));
-    });
+    List<Widget> comments = _createCommentWidgets(_comments, 0);
+
+    widgets.addAll(comments);
 
     return widgets;
+  }
+
+  List<Widget> _createCommentWidgets(List<Comment> comments, double level) {
+
+    if(level > MAX_LEVELS) {
+      return [];
+    }
+
+    List<Widget> widgets = <Widget>[];
+
+    for (Comment comment in comments) {
+      widgets.add(Container(
+          margin: EdgeInsets.only(left: (10 + level * 7), right: 10),
+          width: 600,
+          child: _createCommentCard(comment)));
+
+      if (comment.childComments.length > 0) {
+        List<Widget> childComments = _createCommentWidgets(
+            comment.childComments.take(MAX_CHILD_COMMENTS).toList(), level + 1);
+
+        widgets.addAll(childComments);
+      }
+    }
+
+    return widgets;
+  }
+
+  Card _createCommentCard(Comment comment) {
+    return Card(
+      child: Container(
+          padding: EdgeInsets.all(6),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                comment.author.name,
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              MarkdownBody(data: comment.body)
+            ],
+          )),
+    );
   }
 
   @override

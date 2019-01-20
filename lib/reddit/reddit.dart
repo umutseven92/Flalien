@@ -164,7 +164,9 @@ class Reddit {
       var commentJson = jsonComment['data'];
       Comment comment = _parseComment(commentJson);
 
-      comments.add(comment);
+      if(comment != null) {
+        comments.add(comment);
+      }
     }
 
     return comments;
@@ -179,13 +181,16 @@ class Reddit {
     var replies = commentJson['replies'];
 
 
-    if(replies != '' && replies != []) {
+    if(replies != '' && replies != [] && replies != null) {
       var children = replies['data']['children'];
 
       for(var reply in children) {
         var childCommentJson = reply['data'];
         Comment childComment = _parseComment(childCommentJson);
-        comment.childComments.add(childComment);
+
+        if(childComment != null) {
+          comment.childComments.add(childComment);
+        }
       }
     }
 

@@ -17,9 +17,9 @@ class CommentHelper {
     int acc = 0;
 
     for(var childComment in comment.childComments) {
-      if(childComment.childComments.length > 0) {
+        if(childComment != null && childComment.childComments != null && childComment.childComments.length > 0) {
           acc += _countChildComments(childComment);
-      }
+        }
     }
 
     return acc + comment.childComments.length;
