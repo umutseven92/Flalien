@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 
 class Reddit {
   static const int POST_LIMIT = 50;
+  static const int COMMENT_LIMIT = 50;
 
   bool isAuthorized() {
     return false;
@@ -142,12 +143,17 @@ class Reddit {
     return posts;
   }
 
-  Future<List<Comment>> getComments(Post post, CommentSort sort) async {
+  Future<List<Comment>> getComments(Post post, CommentSort sort, TimeSort timeSort) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
-
 
     String url =
         'https://www.reddit.com/${post.basePost.subreddit.name}/comments/${post.basePost.id}.json?sort=$stringSort';
+
+    if (sort == CommentSort.Controversial || sort == CommentSort.Top) {
+      String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
+
+      url += '&t=$stringTimeSort';
+    }
 
     String response = await _httpGet(url);
 

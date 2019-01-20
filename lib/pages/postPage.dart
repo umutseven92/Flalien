@@ -4,9 +4,11 @@ import 'package:flalien/reddit/post/post.dart';
 import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flalien/reddit/static/commentHelper.dart';
+import 'package:flalien/reddit/timeSort.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 class PostPage extends StatefulWidget {
@@ -30,8 +32,13 @@ class PostPageState extends State<PostPage> {
   Post _post;
   Reddit _reddit;
   List<Comment> _comments;
+  CommentSort _currentSort;
+  TimeSort _currentTimeSort;
 
-  PostPageState(this._post, this._reddit);
+  PostPageState(this._post, this._reddit) {
+    _currentSort = CommentSort.Best;
+    _currentTimeSort = TimeSort.Day;
+  }
 
   List<Widget> _createComments() {
     List<Widget> widgets = <Widget>[];
@@ -50,8 +57,7 @@ class PostPageState extends State<PostPage> {
   }
 
   List<Widget> _createCommentWidgets(List<Comment> comments, double level) {
-
-    if(level > MAX_LEVELS) {
+    if (level > MAX_LEVELS) {
       return [];
     }
 
@@ -92,9 +98,121 @@ class PostPageState extends State<PostPage> {
     );
   }
 
+  void _changeTimeSort(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: Text('Past hour'),
+                onTap: () => _setCurrentTimeSort(TimeSort.Hour),
+              ),
+              ListTile(
+                title: Text('Past day'),
+                onTap: () => _setCurrentTimeSort(TimeSort.Day),
+              ),
+              ListTile(
+                title: Text('Past week'),
+                onTap: () => _setCurrentTimeSort(TimeSort.Week),
+              ),
+              ListTile(
+                title: Text('Past month'),
+                onTap: () => _setCurrentTimeSort(TimeSort.Month),
+              ),
+              ListTile(
+                title: Text('Past year'),
+                onTap: () => _setCurrentTimeSort(TimeSort.Year),
+              ),
+              Container(
+                  height: 50,
+                  child: ListTile(
+                    title: Text('All time'),
+                    onTap: () => _setCurrentTimeSort(TimeSort.All),
+                  )),
+            ],
+          );
+        });
+  }
+
+  void _changeCommentSort(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(FontAwesomeIcons.clock),
+                title: Text('Old'),
+                onTap: () => _setCurrentCommentSort(CommentSort.Old),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.star),
+                title: Text('Best'),
+                onTap: () => _setCurrentCommentSort(CommentSort.Best),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.newspaper),
+                title: Text('New'),
+                onTap: () => _setCurrentCommentSort(CommentSort.New),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.chartLine),
+                title: Text('Top'),
+                onTap: () => _setCommentAndTimeSort(CommentSort.Top),
+              ),
+              ListTile(
+                leading: Icon(FontAwesomeIcons.angry),
+                title: Text('Controversial'),
+                onTap: () => _setCommentAndTimeSort(CommentSort.Controversial),
+              ),
+            ],
+          );
+        });
+  }
+
+
+  void _setCurrentTimeSort(TimeSort timeSort) {
+    _currentTimeSort = timeSort;
+
+    _refreshComments();
+
+    Navigator.pop(context);
+  }
+
+  void _setCurrentCommentSort(CommentSort sort) {
+    _currentSort = sort;
+
+    _refreshComments();
+
+    Navigator.pop(context);
+  }
+
+  void _setCommentAndTimeSort(CommentSort postSort) {
+    Navigator.pop(context);
+
+    _currentSort = postSort;
+    _changeTimeSort(context);
+  }
+
+  void _refreshComments() {
+    setState(() {
+      _comments = null;
+    });
+    _reddit.getComments(_post, _currentSort, _currentTimeSort).then((result) {
+      if (mounted) {
+        setState(() {
+          this._comments = result;
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
-    _reddit.getComments(_post, CommentSort.Best).then((result) {
+    _reddit.getComments(_post, _currentSort, _currentTimeSort).then((result) {
       if (mounted) {
         setState(() {
           this._comments = result;
@@ -161,9 +279,20 @@ class PostPageState extends State<PostPage> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text(_post.basePost.subreddit.name),
-        ),
-        body: fullSection);
+      appBar: AppBar(
+        title: Text(_post.basePost.subreddit.name),
+      ),
+      body: fullSection,
+      /*
+        floatingActionButton:
+          FloatingActionButton(
+            onPressed: () {},
+            child: Icon(FontAwesomeIcons.angleDoubleDown),
+            backgroundColor: FlalienColors.mainColor,
+            foregroundColor: Colors.white,
+            shape: CircleBorder(),
+          ),
+          */
+    );
   }
 }
