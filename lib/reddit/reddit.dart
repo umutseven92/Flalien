@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flalien/reddit/author.dart';
-import 'package:flalien/reddit/basePost.dart';
+import 'package:flalien/reddit/post/basePost.dart';
 import 'package:flalien/reddit/comment/comment.dart';
 import 'package:flalien/reddit/comment/commentSort.dart';
 import 'package:flalien/reddit/post/post.dart';
@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 
 class Reddit {
   static const int POST_LIMIT = 50;
+  static const int COMMENT_LIMIT = 50;
 
   bool isAuthorized() {
     return false;
@@ -142,30 +143,68 @@ class Reddit {
     return posts;
   }
 
-  Future<List<Comment>> getComments(Post post, CommentSort sort) async {
+  Future<List<Comment>> getComments(Post post, CommentSort sort, TimeSort timeSort) async {
     String stringSort = SortHelper.getStringValueOfSort(sort);
-
-    List<Comment> comments = List<Comment>();
 
     String url =
         'https://www.reddit.com/${post.basePost.subreddit.name}/comments/${post.basePost.id}.json?sort=$stringSort';
+
+    if (sort == CommentSort.Controversial || sort == CommentSort.Top) {
+      String stringTimeSort = SortHelper.getStringValueOfSort(timeSort);
+
+      url += '&t=$stringTimeSort';
+    }
 
     String response = await _httpGet(url);
 
     var jsonComments = jsonDecode(response);
 
+    return parseComments(jsonComments);
+
+  }
+
+  List<Comment> parseComments(dynamic jsonComments) {
+    List<Comment> comments = List<Comment>();
+
     for (var jsonComment in jsonComments[1]['data']['children']) {
-      var comment = jsonComment['data'];
+      var commentJson = jsonComment['data'];
+      Comment comment = _parseComment(commentJson);
 
-      String body = comment['body'];
-      Author author = Author(comment['author']);
-
-      if (body != null && author != null) {
-        comments.add(Comment(body, author));
+      if(comment != null) {
+        comments.add(comment);
       }
     }
 
     return comments;
+  }
+
+  Comment _parseComment(dynamic commentJson) {
+    String body = commentJson['body'];
+    Author author = Author(commentJson['author']);
+
+    Comment comment = Comment(body, author);
+
+    var replies = commentJson['replies'];
+
+
+    if(replies != '' && replies != [] && replies != null) {
+      var children = replies['data']['children'];
+
+      for(var reply in children) {
+        var childCommentJson = reply['data'];
+        Comment childComment = _parseComment(childCommentJson);
+
+        if(childComment != null) {
+          comment.childComments.add(childComment);
+        }
+      }
+    }
+
+    if (body != null && author != null) {
+      return comment;
+    } else {
+      return null;
+    }
   }
 
   Future<List<Subreddit>> searchSubreddits(String query,
