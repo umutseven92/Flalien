@@ -4,7 +4,9 @@ import 'package:flalien/reddit/post/post.dart';
 import 'package:flalien/reddit/post/postType.dart';
 import 'package:flalien/reddit/reddit.dart';
 import 'package:flalien/reddit/static/commentHelper.dart';
+import 'package:flalien/reddit/static/sortHelper.dart';
 import 'package:flalien/reddit/timeSort.dart';
+import 'package:flalien/static/flalienColors.dart';
 import 'package:flalien/widgets/loadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -42,12 +44,6 @@ class PostPageState extends State<PostPage> {
 
   List<Widget> _createComments() {
     List<Widget> widgets = <Widget>[];
-
-    widgets.add(Container(
-        margin: EdgeInsets.only(top: 10, left: 15, right: 15),
-        child: Text(
-            '${CommentHelper.countCommentsRecursively(_comments)} Comments:',
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20))));
 
     List<Widget> comments = _createCommentWidgets(_comments, 0);
 
@@ -173,7 +169,6 @@ class PostPageState extends State<PostPage> {
         });
   }
 
-
   void _setCurrentTimeSort(TimeSort timeSort) {
     _currentTimeSort = timeSort;
 
@@ -266,14 +261,52 @@ class PostPageState extends State<PostPage> {
         ],
       );
     } else {
+      List<RaisedButton> filters = <RaisedButton>[
+        RaisedButton(
+            elevation: 0,
+            color: Color.fromARGB(0, 10, 10, 10),
+            child: Text(
+              'Sort: ${SortHelper.getFriendlyStringValueOfSort(_currentSort)}',
+              style: TextStyle(color: FlalienColors.mainColor, fontSize: 17),
+            ),
+            onPressed: () => _changeCommentSort(context))
+      ];
+
+      if (_currentSort == CommentSort.Top ||
+          _currentSort == CommentSort.Controversial) {
+        filters.add(RaisedButton(
+            elevation: 0,
+            color: Color.fromARGB(0, 10, 10, 10),
+            child: Text(
+              'Time: ${SortHelper.getFriendlyStringValueOfTimeSort(_currentTimeSort)}',
+              style: TextStyle(color: FlalienColors.mainColor, fontSize: 17),
+            ),
+            onPressed: () => _changeTimeSort(context)));
+      }
+
+      Widget commentSorters = Container(
+        margin: EdgeInsets.only(left:15),
+          child: Row(
+        children: filters,
+        mainAxisAlignment: MainAxisAlignment.start,
+      ));
+
+      Widget commentInfoSection = Container(
+          margin: EdgeInsets.only(top: 10, left: 15, right: 15),
+          child: Text(
+              '${CommentHelper.countCommentsRecursively(_comments)} Comments:',
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20)));
+
+      List<Widget> comments = _createComments();
+
       fullSection = ListView(
         children: <Widget>[
           postSection,
           Container(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: _createComments()),
-          )
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [commentSorters, commentInfoSection]
+                    ..addAll(comments)))
         ],
       );
     }
