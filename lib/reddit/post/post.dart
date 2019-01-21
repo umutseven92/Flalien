@@ -1,4 +1,4 @@
-import 'package:flalien/reddit/basePost.dart';
+import 'package:flalien/reddit/post/basePost.dart';
 
 class Post {
   String id;
